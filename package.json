@@ -18,6 +18,7 @@
     },
 
     "scripts": {
-        "startDev" : "node_modules/.bin/supervisor server.js"
+        "start" : "node bin/server.js", 
+        "startDev" : "node_modules/.bin/supervisor bin/server.js"
     }
 }
