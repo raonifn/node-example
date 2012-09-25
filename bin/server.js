@@ -4,12 +4,20 @@ var mongo = require('../lib/mongodb');
 
 var count = function(name, route) {
   console.info('count ' + name);
-  mongo.count(name, function(err, value) {    
+  mongo.collection(name, function(err, collection) {
+  if (err) {
+     route.res.emit('error', err);
+     return;
+
+  }
+  collection.count(function(err, count) {
     if (err) {
-        throw err;
+        route.res.emit('error', err);
+        return;
     }
     route.res.writeHeader(200, { 'Content-Type': 'text/plain'});
     route.res.end(JSON.stringify({entity: name, count: value}));
+  });
   });
 };
 
