@@ -14,7 +14,8 @@
     },
 
     "devDependencies" : {
-        "supervisor": "0.4.1"
+        "supervisor": "0.4.1",
+        "node-inpector" : "0.2.0beta3"
     },
 
     "scripts": {
