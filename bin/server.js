@@ -1,23 +1,21 @@
 var http = require('http');
 var director = require('director');
-var mongo = require('../lib/mongodb');
+var Mongo = require('../lib/mongodb').Mongo;
+
+var dbName = process.env['MONGO_NODE_DRIVER_DB'];
+var host = process.env['MONGO_NODE_DRIVER_HOST'];
+var port = process.env['MONGO_NODE_DRIVER_PORT'];
+
+var mongo = new Mongo(host, port, dbName);
 
 var count = function(name, route) {
-  console.info('count ' + name);
-  mongo.collection(name, function(err, collection) {
-  if (err) {
-     route.res.emit('error', err);
-     return;
-
-  }
-  collection.count(function(err, count) {
+  mongo.count(name, function(err, count) {
     if (err) {
         route.res.emit('error', err);
         return;
     }
     route.res.writeHeader(200, { 'Content-Type': 'text/plain'});
-    route.res.end(JSON.stringify({entity: name, count: value}));
-  });
+    route.res.end(JSON.stringify({entity: name, count: count}));
   });
 };
 
@@ -51,4 +49,21 @@ var server = http.createServer(function(req, res) {
   });
 });
 
-server.listen(9990);
+mongo.connect(function(err) {
+    if (err) {
+        console.log(err);
+        return;
+    }
+
+    server.on('close', function() {
+        mongo.close(function(err) {
+            if (err) {
+                console.info('error closing mongo', err);
+                return;
+            }
+            console.info('mongo closed');
+        });
+    });
+
+    server.listen(9990);
+});
