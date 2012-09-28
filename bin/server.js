@@ -19,6 +19,27 @@ var count = function(name, route) {
   });
 };
 
+var getJSON = function(req, callback) {
+     var body = '';
+     req.on('data', function(chunk) {
+       console.info('data', chunk);
+       body += chunk.toString();
+     });
+     req.on('end', function() {
+        console.info('body', req.body);
+        var obj = JSON.parse(body);
+        callback(obj);
+     });
+}
+
+var insert = function(name, route, callback) {
+    console.info('insert', name);
+    getJSON(route.req, function(element) {
+        console.info('data', element);
+        mongo.insert(element, callback); 
+    });
+}
+
 var router = new director.http.Router();
 
 router.get('/', function() {
@@ -35,17 +56,37 @@ router.path('/entity', function() {
     this.get(function(name){
         count(name, this);
     });
+    this.post(function(name) {
+        console.info('here', name);
+        insert(name, this, function(err, element) {
+            if (err) {
+                route.res.emit('error', err);
+                return;
+            }
+            route.res.writeHeader(200, { 'Content-Type': 'text/plain'});
+            route.res.end(JSON.stringify(element));
+        });
+    });
   }); 
 });
 
 var server = http.createServer(function(req, res) {
+    req.on('data', function() {
+    console.info('chunked');
+    });
+//  var data = '';
+//  req.on('data', function(chunk) { console.info('chunk', chunk); data = data + chunk; });
   res.on('error', function(err) {
       res.writeHeader(500, { 'Content-Type': 'text/plain'});
       res.end(JSON.stringify({error: err}));
   });
+//req.on('end', function() {
+ // console.info('end', data);
+ console.info('dispatch');
   router.dispatch(req, res, function (err) {
       res.writeHeader(err.status, { 'Content-Type': 'text/plain'});
       res.end(JSON.stringify(err));
+//  });
   });
 });
 
