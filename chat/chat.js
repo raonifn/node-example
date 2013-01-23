@@ -1,7 +1,7 @@
 var http = require('http'),
 	fs = require('fs'),
 	sys = require('sys'),
-	ws = require('ws');
+	wsServer = require('ws').Server;
 
 var server = http.createServer(function(request, response) {
 	response.writeHead(200, {
@@ -14,8 +14,8 @@ var server = http.createServer(function(request, response) {
 
 var clients = [];
 
-var WebSocketServer = ws.Server
-  , wss = new WebSocketServer({port: 8080});
+
+var wss = new wsServer({port: 8080});
 wss.on('connection', function(ws) {
 	clients.push(ws);
     
