@@ -1,0 +1,69 @@
+<html>
+<head>
+	<title>Chat</title>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			ws = new WebSocket("ws://localhost:8080");
+			ws.onmessage = function(event)  {
+				var data = event.data;
+				data = data.replace(/&/g, "&amp;").replace(/</g, '&lt;').replace(/>/g, '&gt;');
+				$('#log ul').append('<li>' +data + '</li>');
+
+				$('#entry').keypress(function(event) {
+					if (event.keyCode != 13) return;
+					var msg = $('#entry').val();
+					if (msg) {
+						ws.send(msg);
+						$('#entry').val('');
+						window.scrollBy(0, 1000000000000000);
+						$('#entry').focus();
+					}
+				});
+			}
+		});
+	</script>
+	<style type="text/css">
+		body {
+			background-color: #666;
+			color: #fff;
+			font-size: 14px;
+			margin: 0;
+			padding: 0;
+			font-family: Helvetica, Arial, Sans-Serif;
+		}
+		#log {
+			margin-bottom: 100px;
+			width: 100%;
+		}
+		#log ul {
+			padding: 0;
+			margin: 0;
+		}
+		#log ul li {
+			list-style-type: none;
+
+		}
+		#console {
+			background-color: black;
+			color: white;
+			border-top: 1px solid white;
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			font-size: 18px;
+		}
+		#console input {
+			width: 100%;
+			background-color: inherit;
+			color: inherit;
+			font-size: inherit;
+		}
+	</style>
+</head>
+<body>
+	<h1>Chat</h1>
+	<div id="log"><ul></ul></div>
+	<div id=console><input type="text" id="entry" /></div>
+</body>
+</html>

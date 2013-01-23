@@ -1,0 +1,14 @@
+{
+    "name" : "chat-example",
+    "version" : "0.1.0",
+    "private" : true,
+
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/raonifn/node-example.git"
+    },
+
+    "dependencies": {
+        "ws": "*"
+    }
+}
