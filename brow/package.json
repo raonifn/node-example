@@ -19,6 +19,6 @@
 
     "scripts": {
         "start" : "node bin/server.js", 
-        "test" : "node_modules/.bin/supervisor bin/server.js"
+        "test" : "expresso node_modules/.bin/expresso test/unit/*.test.js"
     }
 }
